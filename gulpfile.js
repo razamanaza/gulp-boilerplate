@@ -161,7 +161,7 @@ var buildScripts = function (done) {
 var copyFiles = function (done) {
 
 	return src(paths.copy.input)
-		.pipe(dest(paths.copy.output + '**/*'));
+		.pipe(dest(paths.copy.output));
 
 };
 
