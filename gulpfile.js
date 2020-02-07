@@ -28,14 +28,6 @@ var paths = {
 };
 
 /**
- * Other global settings
- */
-
-var settings = {
-  ghPagesUrl: '' //Should look like https://github.com/dezforce/dezforce.github.io.git
-}
-
-/**
   * Gulp Packages
 */
 
@@ -54,6 +46,7 @@ var minify = require('gulp-cssnano');
 
 // Images
 var imagemin = require('gulp-imagemin');
+var imgCompress  = require('imagemin-jpeg-recompress');
 
 // Scripts
 var concat = require('gulp-concat');
@@ -64,7 +57,7 @@ var optimizejs = require('gulp-optimize-js');
 var browserSync = require('browser-sync');
 
 // Gh-pages deploy
-var ghPages = require('gulp-gh-pages-will');
+var ghPages = require('gh-pages');
 
 /**
   * Gulp Tasks
@@ -113,7 +106,16 @@ var optimizeImages = function (done) {
 
 	return src(paths.images.input)
 		.pipe(imagemin([
-      imagemin.jpegtran({progressive: true})
+      imagemin.jpegtran({progressive: true}),
+      imgCompress({
+				loops: 4,
+				min: 70,
+				max: 80,
+				quality: 'high'
+			}),
+			imagemin.gifsicle(),
+			imagemin.optipng(),
+			imagemin.svgo()
     ]))
 		.pipe(dest(paths.images.output));
 
@@ -197,8 +199,6 @@ var watchSource = function (done) {
 var deploy = function (done) {
   return src(paths.deploy.src)
   .pipe(ghPages({
-    remoteUrl: settings.ghPagesUrl,
-    branch: 'master'
   }));
 };
 
